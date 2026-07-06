@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>口說練習室</title>
+<style>
+:root{
+  --mist:#F4F8F9; --card:#FFFFFF; --ink:#22303C;
+  --indigo:#24366B; --teal:#177E89; --coral:#EF6F5A;
+  --gold:#E9A93C; --line:#DFE8EC; --soft:#5B6B7A;
+  --ok:#2E9E6B; --bad:#D65A4A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;background:var(--mist);color:var(--ink);min-height:100vh}
+.en{font-family:Georgia,"Times New Roman",serif}
+
+/* header */
+header{background:linear-gradient(120deg,var(--indigo) 0%,var(--teal) 100%);color:#fff;padding:20px 20px 34px;position:relative}
+header h1{font-size:20px;font-weight:700;letter-spacing:2px}
+header .sub{font-size:12px;opacity:.85;margin-top:3px}
+.streak-pill{position:absolute;top:18px;right:16px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:5px 12px;font-size:13px;font-weight:700}
+.wave{position:absolute;bottom:-1px;left:0;width:100%;height:18px;display:block}
+
+main{max-width:560px;margin:0 auto;padding:16px 16px 60px}
+
+/* generic */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.btn{display:inline-block;border:none;border-radius:10px;padding:12px 18px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-main{background:var(--teal);color:#fff}
+.btn-coral{background:var(--coral);color:#fff}
+.btn-ghost{background:transparent;color:var(--teal);border:1.5px solid var(--teal)}
+.btn-plain{background:#EEF3F5;color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn-block{display:block;width:100%;text-align:center}
+.row{display:flex;gap:10px}
+.row .btn{flex:1}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#EAF2F4;color:var(--teal);font-weight:700}
+.muted{color:var(--soft);font-size:13px}
+h2{font-size:17px;margin-bottom:8px}
+h3{font-size:15px;margin-bottom:6px}
+.hidden{display:none!important}
+.back{background:none;border:none;color:var(--soft);font-size:13px;cursor:pointer;margin-bottom:10px;font-family:inherit}
+
+/* home mode cards */
+.mode{display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform .1s}
+.mode:active{transform:scale(.98)}
+.mode .icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.mode .info{flex:1}
+.mode .info p{font-size:12px;color:var(--soft);margin-top:2px}
+.mode .arrow{color:var(--soft)}
+.badge{background:var(--coral);color:#fff;font-size:11px;border-radius:10px;padding:1px 8px;font-weight:700}
+
+/* today bar */
+.today{display:flex;justify-content:space-between;align-items:center}
+.today .num{font-size:26px;font-weight:800;color:var(--indigo)}
+.today .lbl{font-size:11px;color:var(--soft)}
+.today > div{text-align:center;flex:1}
+
+/* steps */
+.dots{display:flex;gap:6px;justify-content:center;margin:6px 0 14px}
+.dot{width:26px;height:5px;border-radius:3px;background:var(--line)}
+.dot.on{background:var(--teal)}
+.dot.done{background:#9CC9CF}
+.stepname{text-align:center;font-size:13px;color:var(--teal);font-weight:700;margin-bottom:10px}
+
+/* passage */
+.passage{font-size:17px;line-height:1.9;padding:14px;background:#FBFDFD;border:1px solid var(--line);border-radius:10px}
+.passage.blur{filter:blur(6px);user-select:none}
+.trans{font-size:14px;color:var(--soft);line-height:1.8;margin-top:10px;padding:10px;background:#F4F6F7;border-radius:8px}
+.vocab-item{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px dashed var(--line);gap:8px}
+.vocab-item:last-child{border-bottom:none}
+.vocab-item b{font-size:15px}
+.vocab-item .m{font-size:13px;color:var(--soft)}
+.speak-mini{background:#EAF2F4;border:none;border-radius:8px;padding:5px 9px;cursor:pointer;font-size:13px;flex-shrink:0}
+
+/* answer area */
+textarea{width:100%;min-height:110px;border:1.5px solid var(--line);border-radius:10px;padding:12px;font-size:15px;font-family:inherit;resize:vertical;line-height:1.7}
+textarea:focus{outline:none;border-color:var(--teal)}
+.field{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit;margin-bottom:8px;background:#fff}
+.field:focus{outline:none;border-color:var(--teal)}
+.mic{width:100%;padding:13px;border-radius:10px;border:1.5px dashed var(--coral);background:#FFF6F4;color:var(--coral);font-weight:700;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit}
+.mic.rec{background:var(--coral);color:#fff;border-style:solid;animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.75}}
+
+/* feedback */
+.score-row{display:flex;gap:10px;margin-bottom:12px}
+.score-box{flex:1;text-align:center;padding:12px 6px;border-radius:10px;background:#F4F8F9}
+.score-box .n{font-size:24px;font-weight:800;color:var(--indigo)}
+.score-box .l{font-size:11px;color:var(--soft)}
+.err{padding:10px;border-left:3px solid var(--bad);background:#FDF4F2;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:14px;line-height:1.7}
+.err .fix{color:var(--ok);font-weight:700}
+.err .why{font-size:12px;color:var(--soft);margin-top:2px}
+.better{padding:12px;background:#F0F8F4;border-left:3px solid var(--ok);border-radius:0 8px 8px 0;font-size:15px;line-height:1.8;margin-bottom:8px}
+
+/* srs card */
+.srs-word{text-align:center;font-size:30px;font-weight:800;color:var(--indigo);padding:26px 0 8px}
+.srs-detail{text-align:center;padding-bottom:12px}
+.srs-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.srs-btns .btn{padding:10px 4px;font-size:13px}
+.b-again{background:#FDECEA;color:var(--bad)}
+.b-hard{background:#FFF4E2;color:#B57E1E}
+.b-good{background:#E8F5EE;color:var(--ok)}
+.b-easy{background:#E7F1F8;color:var(--indigo)}
+
+/* progress */
+.chart{width:100%;height:140px}
+.hist{font-size:13px;padding:8px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between}
+
+/* reading */
+.passage p{margin-bottom:12px}
+.passage p:last-child{margin-bottom:0}
+.w{cursor:pointer;border-radius:3px}
+.w:hover{background:#EAF2F4}
+.w.saved{background:#FDEFC9}
+.opt{display:block;width:100%;text-align:left;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;margin-bottom:8px;cursor:pointer;font-size:14px;font-family:inherit;line-height:1.6}
+.opt.sel{border-color:var(--teal);background:#EAF2F4}
+.opt.right{border-color:var(--ok);background:#F0F8F4}
+.opt.wrong{border-color:var(--bad);background:#FDF4F2}
+.timer-pill{display:inline-block;background:#EAF2F4;color:var(--indigo);font-weight:800;border-radius:16px;padding:4px 14px;font-size:14px}
+
+/* loading */
+.loading{text-align:center;padding:34px 10px;color:var(--soft)}
+.spin{width:34px;height:34px;border:4px solid var(--line);border-top-color:var(--teal);border-radius:50%;margin:0 auto 12px;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>口說練習室</h1>
+  <div class="sub">Polly 的金色證書衝刺基地 · 860↑ 拚 900</div>
+  <div class="sub" id="countdown" style="margin-top:6px;font-size:13px;font-weight:700;opacity:1"></div>
+  <div class="streak-pill">🔥 <span id="streakNum">0</span> 天</div>
+  <svg class="wave" viewBox="0 0 560 18" preserveAspectRatio="none"><path d="M0,10 C90,20 180,0 280,8 C380,16 470,2 560,10 L560,18 L0,18 Z" fill="#F4F8F9"/></svg>
+</header>
+
+<main>
+
+<!-- ============ HOME ============ -->
+<section id="v-home">
+  <div class="card" id="motto" style="background:linear-gradient(120deg,#24366B,#177E89);color:#fff;border:none;font-size:14px;line-height:1.7;font-weight:700;cursor:pointer" onclick="renderMotto()" title="點一下換一句"></div>
+  <div class="card" id="speakNudge" style="border-left:4px solid var(--coral);font-size:14px;line-height:1.7"></div>
+  <div class="card today">
+    <div><div class="num" id="tSessions">0</div><div class="lbl">今日已練（回）</div></div>
+    <div><div class="num" id="tVocabDue">0</div><div class="lbl">待複習單字</div></div>
+    <div><div class="num" id="tTotal">0</div><div class="lbl">累計練習</div></div>
+  </div>
+
+  <div class="card mode" onclick="startReading()">
+    <div class="icon" style="background:#E7F1F8">📚</div>
+    <div class="info"><h3>閱讀特訓</h3><p>長文＋計時＋題目；點不會的字直接收進單字本</p></div>
+    <div class="arrow">›</div>
+  </div>
+
+  <div class="card mode" onclick="startDaily()">
+    <div class="icon" style="background:#FFF3F0">💬</div>
+    <div class="info"><h3>今日分享 <span class="badge">你點的</span></h3><p>用英文說說你今天在幹嘛，AI 幫你改得更道地</p></div>
+    <div class="arrow">›</div>
+  </div>
+
+  <div class="card mode" onclick="startReview()">
+    <div class="icon" style="background:#F0F8F4">🗂️</div>
+    <div class="info"><h3>單字複習</h3><p>間隔重複：忘了的很快再見，記熟的越隔越久</p></div>
+    <div class="arrow">›</div>
+  </div>
+
+  <div class="card mode" onclick="showProgress()">
+    <div class="icon" style="background:#FBF3E4">📈</div>
+    <div class="info"><h3>我的進步</h3><p>成績曲線、練習紀錄、連續天數</p></div>
+    <div class="arrow">›</div>
+  </div>
+</section>
+
+<!-- ============ SCENARIO PICK ============ -->
+<section id="v-scenario" class="hidden">
+  <button class="back" onclick="goHome()">‹ 回首頁</button>
+  <h2>今天想練哪種情境？</h2>
+  <p class="muted" style="margin-bottom:12px">素材約 30 秒、程度抓在你 670 → 800 的學習區</p>
+  <div id="continueBox"></div>
+  <div class="card mode" onclick="newMaterial('TOEIC')"><div class="icon" style="background:#E7F1F8">📝</div><div class="info"><h3>TOEIC 考試題型</h3><p>模擬多益口說／聽讀常見情境</p></div><div class="arrow">›</div></div>
+  <div class="card mode" onclick="newMaterial('職場')"><div class="icon" style="background:#F0F8F4">💼</div><div class="info"><h3>職場英文</h3><p>科技公司開會、報告、email 口頭溝通</p></div><div class="arrow">›</div></div>
+  <div class="card mode" onclick="newMaterial('旅遊')"><div class="icon" style="background:#FBF3E4">🧳</div><div class="info"><h3>歐洲旅遊</h3><p>點餐、問路、訂房、車站對話</p></div><div class="arrow">›</div></div>
+</section>
+
+<!-- ============ SHADOWING ============ -->
+<section id="v-shadow" class="hidden">
+  <button class="back" onclick="confirmExit()">‹ 離開練習</button>
+  <div class="dots" id="dots"></div>
+  <div class="stepname" id="stepName"></div>
+  <div id="shadowBody"></div>
+</section>
+
+<!-- ============ READING ============ -->
+<section id="v-read" class="hidden">
+  <button class="back" onclick="exitReading()">‹ 離開閱讀</button>
+  <div id="readBody"></div>
+</section>
+
+<!-- ============ DAILY TALK ============ -->
+<section id="v-daily" class="hidden">
+  <button class="back" onclick="goHome()">‹ 回首頁</button>
+  <h2>💬 今日分享</h2>
+  <div id="dailyBody"></div>
+</section>
+
+<!-- ============ VOCAB REVIEW ============ -->
+<section id="v-review" class="hidden">
+  <button class="back" onclick="goHome()">‹ 回首頁</button>
+  <h2>🗂️ 單字複習</h2>
+  <div id="reviewBody"></div>
+</section>
+
+<!-- ============ PROGRESS ============ -->
+<section id="v-progress" class="hidden">
+  <button class="back" onclick="goHome()">‹ 回首頁</button>
+  <h2>📈 我的進步</h2>
+  <div id="progressBody"></div>
+</section>
+
+</main>
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+   口說練習室 — app.js（Phase 1，假資料模式）
+   目前完成：資料底層 + 畫面切換 + 首頁數字
+   ========================================================= */
+
+/* ---------- 資料底層（存在瀏覽器本機） ---------- */
+const STORAGE_KEY = 'speaking-app-v1';
+
+function defaultData(){
+  return {
+    streak: { count: 0, lastDate: '', freezeLeftThisMonth: 1 },
+    sessions: [],          // [{date, mode:'shadow|daily', score}]
+    vocab: [],             // [{word, meaning, example, due, intervalDays, addedDate}]
+    currentMaterial: null, // {scenario, title, text, translation, vocab, daysUsed, lastUsedDate, level}
+    settings: { dailyGoal: 2, apiKey: '' },
+    recentAccuracy: []
+  };
+}
+
+let DATA = loadData();
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultData();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultData(), parsed); // 補齊缺欄位，壞檔也不炸
+  }catch(e){
+    console.warn('資料讀取失敗，改用全新資料', e);
+    return defaultData();
+  }
+}
+
+function saveData(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
+  }catch(e){
+    console.warn('資料儲存失敗', e);
+    toast('存檔失敗，請確認瀏覽器允許儲存');
+  }
+}
+
+/* ---------- 小工具 ---------- */
+function todayStr(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+}
+
+let toastTimer = null;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove('show'), 2200);
+}
+
+/* ---------- 畫面切換 ---------- */
+const VIEWS = ['home','scenario','shadow','read','daily','review','progress'];
+
+function showView(name){
+  VIEWS.forEach(v=>{
+    const el = document.getElementById('v-' + v);
+    if(el) el.classList.toggle('hidden', v !== name);
+  });
+  window.scrollTo(0, 0);
+}
+
+function goHome(){ renderHome(); showView('home'); }
+function goScenario(){ renderScenario(); showView('scenario'); }
+/* =========================================================
+   今日分享（Daily Talk）：每天一題，用說的或打的回答
+   ========================================================= */
+const DAILY_QUESTIONS = [
+  { q:"What did you do today? Tell me about the thing that took up most of your time.",
+    zh:'今天做了什麼？說說佔掉你最多時間的那件事。',
+    sample:"I spent most of my afternoon preparing slides for tomorrow's client meeting. It took longer than I expected because I kept adjusting the layout, but I'm happy with how it turned out.",
+    follow_up:"What would you do differently if you could start the day again?" },
+  { q:"What did you learn today, at work or at school? It can be something small.",
+    zh:'今天在公司或學校學到什麼？小事也可以。',
+    sample:"I learned a quicker way to sort data in Excel from a coworker. It only saves a few minutes each time, but those minutes really add up over a week.",
+    follow_up:"How will you use what you learned tomorrow?" },
+  { q:"What did you eat today? Which meal was the best, and why?",
+    zh:'今天吃了什麼？哪一餐最讚、為什麼？',
+    sample:"I grabbed a bowl of beef noodle soup for lunch near the office. The broth was rich without being greasy, and honestly it made the whole afternoon feel easier.",
+    follow_up:"If a foreign friend visited you, which local dish would you recommend first?" },
+  { q:"How are you feeling today? Try to explain why.",
+    zh:'今天心情如何？試著說出原因。',
+    sample:"I'm feeling a bit drained because the morning was packed with back-to-back tasks. Still, I'm in a good mood overall since I finished everything on my list.",
+    follow_up:"What usually helps you recharge after a tiring day?" },
+  { q:"Did anything unexpected happen today? How did you handle it?",
+    zh:'今天有發生什麼意料之外的事嗎？你怎麼處理的？',
+    sample:"My boss suddenly moved our deadline up by two days, which threw me off at first. I rearranged my schedule, dropped a low-priority task, and now it looks doable.",
+    follow_up:"Looking back, would you handle it the same way?" },
+  { q:"What was the most annoying part of your day, and how did you deal with it?",
+    zh:'今天最煩的事是什麼？你怎麼面對的？',
+    sample:"The printer kept jamming right before my report was due, which drove me crazy. I ended up sending the file to a coworker's machine and made it just in time.",
+    follow_up:"What's your usual trick for staying calm when things go wrong?" },
+  { q:"What are you looking forward to tomorrow, even a small thing?",
+    zh:'明天有什麼期待的事？再小都算。',
+    sample:"I'm looking forward to Friday evening, because I'm meeting two old classmates for hotpot. We haven't caught up in months, so there will be a lot to talk about.",
+    follow_up:"Who do you catch up with most often, and why that person?" },
+  { q:"Tell me about someone you talked to today. What did you talk about?",
+    zh:'說說今天跟你講過話的某個人，聊了什麼？',
+    sample:"I chatted with a senior coworker about how she plans her mornings. She said she blocks one hour for deep work before checking email, and I might steal that habit.",
+    follow_up:"What's one habit you've picked up from people around you?" },
+  { q:"What's one small win you had today? Don't be humble.",
+    zh:'今天的一個小勝利是什麼？不用謙虛。',
+    sample:"I finally cleared my inbox to zero, which hasn't happened in weeks. It sounds tiny, but starting tomorrow with a clean slate feels great.",
+    follow_up:"What bigger win are you aiming for this month?" },
+  { q:"If you could replay one moment from today, which one would it be and why?",
+    zh:'如果今天有一個瞬間可以重播，你選哪個？為什麼？',
+    sample:"I'd replay the moment my experiment finally worked after three failed tries. The numbers on the screen matched my prediction, and I couldn't stop smiling.",
+    follow_up:"What did the failed tries teach you?" }
+];
+
+let DAILY = { qi: 0, text: '' };
+
+function startDaily(){
+  // 依日期輪換：每天自動換一題（也可手動換）
+  DAILY = { qi: Math.floor(Date.now() / 86400000) % DAILY_QUESTIONS.length, text: '' };
+  showView('daily');
+  renderDailyQ();
+}
+
+function otherDailyQ(){
+  const ta = document.getElementById('retellText');
+  if(ta) DAILY.text = ta.value;
+  DAILY.qi = (DAILY.qi + 1 + Math.floor(Math.random() * (DAILY_QUESTIONS.length - 1))) % DAILY_QUESTIONS.length;
+  renderDailyQ();
+}
+
+function renderDailyQ(){
+  const q = DAILY_QUESTIONS[DAILY.qi];
+  document.getElementById('dailyBody').innerHTML = `
+    <div class="card">
+      <span class="tag">今日問題</span>
+      <div class="passage en" style="margin-top:8px">${q.q}</div>
+      <div class="trans">${q.zh}</div>
+      <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="otherDailyQ()">🔀 換一題</button>
+    </div>
+    <div class="card">
+      <h3>用英文回答（2–5 句就很棒）</h3>
+      ${STT_OK ? `<button class="mic" id="micBtn" style="margin-top:10px" onclick="toggleRec()">🎙️ 按一下開始說（再按停止）</button>`
+               : `<p class="muted" style="margin:8px 0">（這個瀏覽器不支援麥克風輸入，用打的一樣算開口練習的暖身）</p>`}
+      <textarea id="retellText" class="en" placeholder="你的英文會出現在這裡，也可以直接打字或修改…"></textarea>
+    </div>
+    <button class="btn btn-coral btn-block" onclick="submitDaily()">送 AI 批改 →</button>`;
+  if(DAILY.text) document.getElementById('retellText').value = DAILY.text;
+}
+
+function submitDaily(){
+  stopRec(); stopSpeak();
+  const ta = document.getElementById('retellText');
+  const txt = (ta ? ta.value : '').trim();
+  if(!txt){ toast('先用說的或打的回答一下，再送批改'); return; }
+  DAILY.text = txt;
+  const q = DAILY_QUESTIONS[DAILY.qi];
+  document.getElementById('dailyBody').innerHTML =
+    '<div class="loading"><div class="spin"></div>AI 批改中…</div>';
+  gradeText(txt, q.sample)
+    .then(fb=>{
+      fb.follow_up = q.follow_up;
+      SH.feedback = fb; // 讓點擊朗讀（speakFb）共用
+      renderDailyResult(fb);
+    })
+    .catch(err=>{
+      console.warn(err);
+      document.getElementById('dailyBody').innerHTML =
+        '<div class="card"><p>AI 沒回好，再試一次。</p>' +
+        '<button class="btn btn-main btn-block" style="margin-top:10px" onclick="renderDailyQ()">重試</button></div>';
+    });
+}
+
+function renderDailyResult(fb){
+  const errHtml = fb.errors.length
+    ? fb.errors.map(e=>`
+      <div class="err"><span style="text-decoration:line-through">${e.original}</span> → <span class="fix">${e.corrected}</span> <span class="tag">${e.type}</span>
+      <div class="why">${e.explain}</div></div>`).join('')
+    : '<p class="muted">沒抓到明顯錯誤，講得很乾淨！</p>';
+  document.getElementById('dailyBody').innerHTML = `
+    <div class="card">
+      <div class="score-row">
+        <div class="score-box"><div class="n">${fb.fluency}<span style="font-size:13px">/5</span></div><div class="l">流暢度</div></div>
+        <div class="score-box"><div class="n">${fb.accuracy}<span style="font-size:13px">/5</span></div><div class="l">用字文法</div></div>
+        <div class="score-box"><div class="n" style="color:var(--teal)">${(fb.fluency+fb.accuracy)*10}</div><div class="l">本回得分</div></div>
+      </div>
+      <h3>🔍 逐條修正</h3>${errHtml}
+      <h3 style="margin-top:12px">✨ 你的修正版</h3>
+      <div class="better en">${fb.improved}</div>
+      <h3>🏆 母語者可能這樣答</h3>
+      <div class="better en">${fb.native_example}</div>
+      <p class="muted" style="margin-top:8px">💬 ${fb.encouragement}</p>
+    </div>
+    <div class="card" style="border-left:4px solid var(--coral)">
+      <h3>🤔 AI 追問（口說加碼題）</h3>
+      <p class="en" style="font-size:15px;line-height:1.8;margin-top:4px">${fb.follow_up}</p>
+      <p class="muted" style="margin-top:6px">不用送出——直接<b>大聲用英文回答給自己聽</b>，這就是你今天的口說練習。</p>
+    </div>
+    ${FAKE_MODE ? '<p class="muted" style="margin-bottom:10px">🤖 目前是「假 AI」示範批改（只抓幾種台灣常見錯誤）。接上真 AI 後會逐句真批改。</p>' : ''}
+    <button class="btn btn-main btn-block" onclick="completeDaily()">✅ 完成今日分享，打卡！</button>`;
+  window.scrollTo(0, 0);
+}
+
+function completeDaily(){
+  const fb = SH.feedback;
+  recordSession('daily', (fb.fluency + fb.accuracy) * 10);
+  saveData();
+  toast('🎉 今天開口過了！🔥 連續 ' + DATA.streak.count + ' 天');
+  goHome();
+}
+function startReview(){
+  showView('review');
+  const list = DATA.vocab.slice().sort((a,b)=>(b.addedDate||'').localeCompare(a.addedDate||''));
+  const addCard = `
+    <div class="card">
+      <h3>➕ 自己加一個單字</h3>
+      <div style="margin-top:8px">
+        <input class="field en" id="newWord" placeholder="英文單字或片語">
+        <input class="field" id="newMeaning" placeholder="詞性＋中文（例：v. 核銷）">
+        <input class="field en" id="newExample" placeholder="例句（可留白）">
+        <button class="btn btn-main btn-block" onclick="addVocabManual()">存入單字本</button>
+      </div>
+    </div>`;
+  document.getElementById('reviewBody').innerHTML = addCard + (list.length ? `
+    <div class="card">
+      <h3>我的單字本（${list.length}）</h3>
+      <p class="muted" style="margin-bottom:6px">✏️ 可以自己填詞性＋中文（例：v. 核銷）；🗑️ 可刪除。之後這裡會變成「間隔重複」複習模式（Phase 2）。</p>
+      ${list.map(v=>`<div class="vocab-item">
+        <div style="flex:1"><b class="en">${v.word}</b><div class="m">${v.meaning || '（還沒填意思，按 ✏️ 補上）'}</div>${v.example?`<div class="m en">${v.example}</div>`:''}<div class="muted" style="font-size:11px;margin-top:2px">${v.addedDate||''}</div></div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="speak-mini" onclick="editVocab('${v.word.replace(/'/g,"\\'")}')">✏️</button>
+          <button class="speak-mini" onclick="deleteVocab('${v.word.replace(/'/g,"\\'")}')">🗑️</button>
+        </div>
+      </div>`).join('')}
+    </div>`
+    : '<div class="card"><p class="muted">單字本還是空的。去「閱讀特訓」點幾個不會的字，或用上面的表單自己加！</p></div>');
+}
+
+function addVocabManual(){
+  const w  = document.getElementById('newWord').value.trim();
+  if(!w){ toast('先填英文單字'); return; }
+  if(DATA.vocab.some(v=>v.word.toLowerCase()===w.toLowerCase())){ toast('「' + w + '」已經在單字本裡了'); return; }
+  const m  = document.getElementById('newMeaning').value.trim();
+  const ex = document.getElementById('newExample').value.trim();
+  DATA.vocab.push({ word:w, meaning:m, example:ex,
+    due:new Date().toISOString(), intervalDays:0, addedDate:todayStr() });
+  saveData();
+  startReview();
+  toast('📥 已加入：' + w);
+}
+
+function editVocab(word){
+  const v = DATA.vocab.find(x=>x.word===word);
+  if(!v) return;
+  const ans = prompt('輸入「' + word + '」的詞性＋中文意思\n（例：v. 核銷、n. 疏失）', v.meaning || '');
+  if(ans === null) return; // 按取消
+  v.meaning = ans.trim();
+  saveData();
+  startReview();
+  toast('✏️ 已更新：' + word);
+}
+
+function deleteVocab(word){
+  if(!confirm('確定要刪除「' + word + '」嗎？')) return;
+  DATA.vocab = DATA.vocab.filter(x=>x.word!==word);
+  saveData();
+  startReview();
+  toast('🗑️ 已刪除：' + word);
+}
+function showProgress(){
+  showView('progress');
+  const reads = DATA.sessions.filter(s => s.mode === 'reading');
+  const wpms   = reads.filter(s => s.wpm).map(s => s.wpm).slice(-20);
+  const scores = reads.map(s => s.score).slice(-20);
+  const hist = DATA.sessions.slice(-15).reverse();
+  const MODE_LABEL = { reading:'📚 閱讀', shadow:'🎧 跟讀', daily:'💬 今日分享' };
+
+  document.getElementById('progressBody').innerHTML = `
+    <div class="card today">
+      <div><div class="num">🔥${DATA.streak.count}</div><div class="lbl">連續天數</div></div>
+      <div><div class="num">${DATA.sessions.length}</div><div class="lbl">累計回數</div></div>
+      <div><div class="num">${DATA.vocab.length}</div><div class="lbl">單字量</div></div>
+    </div>
+    <div class="card">
+      <h3>📖 閱讀速度 WPM（每分鐘字數）</h3>
+      <p class="muted" style="margin-bottom:6px">目標 150：多益閱讀寫得完的門檻。</p>
+      ${lineChart(wpms, '#177E89')}
+    </div>
+    <div class="card">
+      <h3>🎯 答題正確率（%）</h3>
+      <p class="muted" style="margin-bottom:6px">穩定 80–90% 最理想：太高代表該加難度，太低代表要放慢。</p>
+      ${lineChart(scores, '#24366B')}
+    </div>
+    <div class="card">
+      <h3>📋 練習紀錄（近 15 筆）</h3>
+      ${hist.length ? hist.map(s =>
+        `<div class="hist"><span>${s.date}　${MODE_LABEL[s.mode] || s.mode}</span><span><b>${s.score}</b>分${s.wpm ? '　' + s.wpm + ' wpm' : ''}</span></div>`
+      ).join('') : '<p class="muted">還沒有紀錄，去練一回吧！</p>'}
+    </div>`;
+}
+
+// 簡易 SVG 折線圖
+function lineChart(vals, color){
+  if(vals.length < 2) return '<p class="muted">至少練 2 回才會出現曲線，繼續加油！</p>';
+  const w = 300, h = 90, pad = 10;
+  const mn = Math.min(...vals), mx = Math.max(...vals);
+  const rng = (mx - mn) || 1;
+  const pts = vals.map((v, i) => {
+    const x = pad + i * (w - 2*pad) / (vals.length - 1);
+    const y = h - pad - (v - mn) * (h - 2*pad) / rng;
+    return [x.toFixed(1), y.toFixed(1)];
+  });
+  return `<svg class="chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+      <polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      ${pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${color}"/>`).join('')}
+    </svg>
+    <div class="muted" style="display:flex;justify-content:space-between"><span>最低 ${mn}</span><span>最新 ${vals[vals.length-1]}</span><span>最高 ${mx}</span></div>`;
+}
+function confirmExit(){ if(confirm('確定要離開這次練習嗎？')){ stopSpeak(); stopRec(); goHome(); } }
+
+/* ---------- 考試倒數（2026/10/18 多益，跟媽媽賭三萬） ---------- */
+const EXAM_DATE = '2026-10-18';
+
+function renderCountdown(){
+  const el = document.getElementById('countdown');
+  if(!el) return;
+  const today = new Date(todayStr());           // 今天 00:00
+  const exam  = new Date(EXAM_DATE);            // 考試日 00:00
+  const days  = Math.round((exam - today) / 86400000);
+  if(days > 1){
+    el.textContent = `📅 10/18 多益倒數 ${days} 天`;
+  }else if(days === 1){
+    el.textContent = '📅 明天就是多益！早點睡，明天輾過他們。';
+  }else if(days === 0){
+    el.textContent = '🎯 就是今天！深呼吸，金色證書等你拿。';
+  }else{
+    el.textContent = '🏁 考完了！等成績的日子也繼續開口吧。';
+  }
+}
+
+/* ---------- 激將標語（Polly 點名要的：嗆到有動力那種） ---------- */
+const MOTTOS = [
+  // ↓ Polly 親自指定的，放最前面
+  '😡 他憑什麼？不就英文好一點就躺進比較好的大學？你吞得下去？口說就給我練到直接輾過他！',
+  '💸 忘了跟媽媽的賭約？沒考到，三萬塊旅費當場飛進媽媽口袋——你捨得就繼續躺。',
+  '🎤 你發音又不難聽，還不多講一點？',
+  '🔥 670 的人在滑手機，900 的人已經開口第三回了。',
+  '🗣️ 你今天不開口，考場上就換金色證書笑你開不了口。',
+  '⏳ 現在覺得累就關掉啊——反正結巴的是考場上的你。',
+  '💸 老闆都讓你上班時間做研究了，你好意思考不到 860？',
+  '🏅 金色證書不會自己走過來，你得用嘴巴一句一句把它講過來。',
+  '📉 今天偷懶一回，考場結巴十秒。自己選。',
+  '😤 「明天再練」——你上次也是這樣說的。',
+  '🎯 離 900 只差今天這 10 分鐘，你要輸給一個沙發嗎？',
+  '👀 別人的履歷寫金色證書，你的履歷寫「差一點」？',
+  '🚀 化學系＋金證英文＝無敵。少練一天就少一分底氣。'
+];
+function renderMotto(){
+  const el = document.getElementById('motto');
+  if(el) el.textContent = MOTTOS[Math.floor(Math.random() * MOTTOS.length)];
+}
+
+/* ---------- 首頁 ---------- */
+function renderHome(){
+  renderCountdown();
+  renderMotto();
+  // 連續天數
+  document.getElementById('streakNum').textContent = DATA.streak.count || 0;
+
+  // 今日已練回數
+  const t = todayStr();
+  const todaySessions = DATA.sessions.filter(s => s.date === t).length;
+  document.getElementById('tSessions').textContent = todaySessions;
+
+  // 待複習單字（到期的）
+  const now = new Date();
+  const due = DATA.vocab.filter(v => v.due && new Date(v.due) <= now).length;
+  document.getElementById('tVocabDue').textContent = due;
+
+  // 累計練習回數
+  document.getElementById('tTotal').textContent = DATA.sessions.length;
+
+  // 口說提醒：今天開口了沒（做過今日分享就算）
+  const spokeToday = DATA.sessions.some(s => s.date === t && s.mode === 'daily');
+  document.getElementById('speakNudge').innerHTML = spokeToday
+    ? '🗣️ <b>今天開口過了，讚！</b><span class="muted">口說手感就是這樣一天天養起來的。</span>'
+    : '🗣️ <b>口說提醒：</b><span class="muted">今天還沒開口喔——待會做一回「今日分享」用說的，或把今天讀的文章挑一段大聲唸出來。</span>';
+}
+
+/* ---------- 情境選擇 ---------- */
+function renderScenario(){
+  const box = document.getElementById('continueBox');
+  const m = DATA.currentMaterial;
+  // 有進行中素材且未滿 5 天 → 優先顯示「繼續練這段」
+  if(m && m.daysUsed < 5){
+    box.innerHTML = `
+      <div class="card mode" onclick="continueMaterial()" style="border-color:var(--teal)">
+        <div class="icon" style="background:#E3F0F1">▶️</div>
+        <div class="info">
+          <h3>繼續練這段（第 ${m.daysUsed} 天）<span class="tag">${m.scenario}</span></h3>
+          <p>${m.title || ''}</p>
+        </div>
+        <div class="arrow">›</div>
+      </div>`;
+  }else{
+    box.innerHTML = '';
+  }
+}
+/* =========================================================
+   AI 模組（假資料模式）
+   之後接真 Claude API 只要改這一段的 generateMaterial()，
+   其餘畫面邏輯都不用動。
+   ========================================================= */
+const FAKE_MODE = true;   // 拿到 API key 後改 false，並接上真 API
+
+const MATERIAL_BANK = {
+  'TOEIC': [
+    {
+      title: 'A Restructuring Announcement',
+      sampleRetell: `The company announced a major restructuring. Two smaller divisions will be merged next quarter to speed up decisions and cut costs, and management promised to keep everyone informed and support the employees affected.`,
+      text: `As many of you have heard, the board has approved a major restructuring of our regional operations. Effective next quarter, the two smaller divisions will be consolidated to streamline decision-making and cut overhead. We understand this may raise concerns, so we're committed to keeping everyone in the loop and supporting those whose roles are affected throughout the transition.`,
+      translation: '如同許多人聽說的，董事會已核准一項針對我們區域營運的重大組織重整。自下一季起，兩個較小的部門將被整併，以簡化決策流程並削減營運成本。我們明白這可能引發疑慮，因此我們承諾在整個過渡期間讓大家都掌握最新狀況，並支援受到職務影響的同仁。',
+      vocab: [
+        { word: 'restructuring', meaning: '組織重整、改組', example: 'The restructuring will affect several departments.' },
+        { word: 'consolidate', meaning: '整併、合併鞏固', example: 'They plan to consolidate the two offices into one.' },
+        { word: 'streamline', meaning: '簡化流程、使更有效率', example: 'The new system streamlines the approval process.' },
+        { word: 'overhead', meaning: '（企業的）營運間接成本', example: 'Moving online helped cut overhead significantly.' },
+        { word: 'in the loop', meaning: '掌握最新消息、在狀況內', example: 'Please keep me in the loop on this project.' }
+      ]
+    },
+    {
+      title: 'Negotiating a Contract',
+      sampleRetell: `The buyer likes the new pricing but still worries about delivery delays. So they offered a deal: if the supplier can guarantee shipment within ten days, they will commit to a bigger order upfront.`,
+      text: `Thank you for the revised proposal. While the pricing is more competitive, we still have reservations about the delivery timeline. Our clients expect a tighter turnaround, and any slippage could jeopardize the whole partnership. That said, we're open to compromise. If you can guarantee shipment within ten days, we'd be willing to commit to a larger order upfront.`,
+      translation: '謝謝你們修改後的提案。雖然報價更有競爭力，我們對交貨時程仍有些顧慮。我們的客戶期待更緊湊的作業週期，任何延誤都可能危及整個合作關係。話雖如此，我們願意各退一步。如果你們能保證十天內出貨，我們願意一開始就下更大的訂單。',
+      vocab: [
+        { word: 'revised', meaning: '修改過的、修訂後的', example: 'Please see the revised schedule attached.' },
+        { word: 'reservations', meaning: '疑慮、保留態度', example: 'I have some reservations about this plan.' },
+        { word: 'turnaround', meaning: '（完成事情的）作業週期、周轉時間', example: 'We offer a 24-hour turnaround on all orders.' },
+        { word: 'jeopardize', meaning: '危及、使陷入危險', example: 'Missing the deadline could jeopardize the deal.' },
+        { word: 'upfront', meaning: '預先地、事先（付款/承諾）', example: 'They asked for half the payment upfront.' }
+      ]
+    }
+  ],
+  '職場': [
+    {
+      title: 'A Performance Review',
+      sampleRetell: `My manager praised my progress in client communication, but encouraged me to delegate more so I don't burn out. She also asked me to lead the onboarding project as a chance to step up.`,
+      text: `Overall, you've made remarkable progress this year, especially in client communication. That said, I'd encourage you to delegate more instead of taking everything on yourself. Burning out helps no one. Looking ahead, I'd like you to take the lead on the onboarding project. It's a bit of a stretch, but I'm confident you're ready to step up.`,
+      translation: '整體來說，你今年進步驚人，尤其在客戶溝通這塊。不過，我會鼓勵你多授權出去，不要什麼都自己扛。把自己累垮對誰都沒好處。展望未來，我希望由你來主導新人上手專案。這對你是個挑戰，但我有信心你已經準備好承擔更多了。',
+      vocab: [
+        { word: 'remarkable', meaning: '驚人的、了不起的', example: 'She showed remarkable improvement this term.' },
+        { word: 'delegate', meaning: '授權、把工作分派下去', example: 'A good manager knows how to delegate tasks.' },
+        { word: 'take on', meaning: '承擔、接下（工作/責任）', example: "Don't take on more than you can handle." },
+        { word: 'burn out', meaning: '（因過勞）身心俱疲、累垮', example: 'Working weekends will only burn you out.' },
+        { word: 'step up', meaning: '挺身而出、承擔起更多責任', example: 'The team needs someone to step up and lead.' }
+      ]
+    },
+    {
+      title: 'Pushing Back on a Deadline',
+      sampleRetell: `The speaker asked to move the deadline to Monday, because rushing would mean cutting corners on quality. They would rather deliver something solid than rush out something half-baked.`,
+      text: `I want to be upfront with you. Given the current workload, hitting Friday's deadline isn't realistic without cutting corners, and I'd rather not compromise on quality. Could we push the delivery to Monday? That extra weekend would let the team run a proper review. Honestly, I'd rather under-promise and over-deliver than rush out something half-baked.`,
+      translation: '我想跟你坦白講。以目前的工作量，要趕上週五的期限，勢必得偷工減料，而我不太想在品質上妥協。我們可以把交件延到週一嗎？多出來的這個週末能讓團隊好好做一次檢查。老實說，我寧可把話說保守、成果做超出預期，也不想趕出一個半成品。',
+      vocab: [
+        { word: 'upfront', meaning: '坦白的、有話直說的', example: 'I appreciate you being upfront with me.' },
+        { word: 'cut corners', meaning: '偷工減料、便宜行事', example: "We can't cut corners on safety." },
+        { word: 'compromise (on)', meaning: '（在某事上）妥協、將就', example: 'I refuse to compromise on quality.' },
+        { word: 'under-promise and over-deliver', meaning: '把話說保守、做出超乎預期的成果', example: 'Her motto is to under-promise and over-deliver.' },
+        { word: 'half-baked', meaning: '不成熟的、考慮不周的、半成品的', example: "It's a half-baked idea that needs more thought." }
+      ]
+    }
+  ],
+  '旅遊': [
+    {
+      title: 'A Missed Connection',
+      sampleRetell: `The traveler's connecting flight was cancelled because of a strike, so they asked the airline staff to rebook them on the next available flight and to cover a hotel if the delay was overnight.`,
+      text: `Excuse me, I've just been told my connecting flight was cancelled because of the strike. I've been stranded here for hours with no clear information. Could you walk me through my options? I'd appreciate being rebooked on the next available flight, and if there's an overnight delay, I assume the airline will cover accommodation?`,
+      translation: '不好意思，我剛被告知我的轉機航班因為罷工取消了。我已經在這裡困了好幾個小時，卻得不到明確的資訊。可以請你幫我說明一下我有哪些選擇嗎？我希望能被改訂到下一班有位子的航班，而且如果要過夜延誤，我想航空公司應該會負擔住宿吧？',
+      vocab: [
+        { word: 'connecting flight', meaning: '轉機航班', example: 'I have a connecting flight in Amsterdam.' },
+        { word: 'stranded', meaning: '受困、進退不得', example: 'Hundreds of passengers were stranded by the storm.' },
+        { word: 'walk someone through', meaning: '一步步帶某人了解、詳細說明', example: 'Could you walk me through the procedure?' },
+        { word: 'rebook', meaning: '改訂、重新訂位', example: 'They rebooked me on an earlier train.' },
+        { word: 'cover', meaning: '負擔、支付（費用）', example: 'Does the insurance cover lost luggage?' }
+      ]
+    },
+    {
+      title: 'Making a Complaint Politely',
+      sampleRetell: `The guest politely complained that the room didn't match what was advertised — no sea view and broken air conditioning — and asked to be moved to another room or have it looked into right away.`,
+      text: `I don't mean to be difficult, but the room isn't quite what we were promised. The website advertised a sea view, and we're actually facing the car park. On top of that, the air conditioning doesn't seem to be working. I'd really appreciate it if you could move us to another room, or at least look into it right away.`,
+      translation: '我無意找麻煩，但這間房跟當初承諾的不太一樣。網站上打的是海景，我們實際上卻是面對停車場。除此之外，冷氣好像也壞了。如果你能幫我們換到另一間房，或至少馬上處理一下，我會非常感激。',
+      vocab: [
+        { word: 'advertise', meaning: '（廣告上）宣稱、標榜', example: 'The hotel advertised free breakfast.' },
+        { word: 'on top of that', meaning: '除此之外、更糟的是', example: 'The flight was late, and on top of that, they lost my bag.' },
+        { word: 'look into', meaning: '調查、了解（並處理）', example: "I'll look into the problem and get back to you." },
+        { word: "I'd appreciate it if", meaning: '如果你能…我會很感激（客氣的請求）', example: "I'd appreciate it if you could reply by tomorrow." },
+        { word: 'right away', meaning: '馬上、立刻', example: 'The manager dealt with it right away.' }
+      ]
+    }
+  ]
+};
+
+// 模擬「AI 出題」：假資料模式從題庫挑一篇；之後真 AI 就換這個函式內容
+function generateMaterial(scenario, level){
+  return new Promise((resolve, reject)=>{
+    if(FAKE_MODE){
+      setTimeout(()=>{
+        const bank = MATERIAL_BANK[scenario] || MATERIAL_BANK['TOEIC'];
+        const pick = bank[Math.floor(Math.random() * bank.length)];
+        resolve(JSON.parse(JSON.stringify(pick))); // 回傳複本，避免改到題庫
+      }, 900); // 假裝在思考，讓 loading 轉一下
+    }else{
+      // TODO：接真 Claude API（HANDOFF §5.3 A）
+      reject(new Error('尚未接上 AI'));
+    }
+  });
+}
+
+/* =========================================================
+   跟讀：先做「產生素材 + 顯示素材」，六步驟精靈為下一步
+   ========================================================= */
+function newMaterial(scenario){
+  showView('shadow');
+  document.getElementById('dots').innerHTML = '';
+  document.getElementById('stepName').textContent = '';
+  document.getElementById('shadowBody').innerHTML =
+    '<div class="loading"><div class="spin"></div>正在為你出一段「' + scenario + '」的素材…</div>';
+
+  generateMaterial(scenario, DATA.currentMaterial ? DATA.currentMaterial.level : 4)
+    .then(mat=>{
+      DATA.currentMaterial = {
+        scenario,
+        title: mat.title,
+        text: mat.text,
+        translation: mat.translation,
+        vocab: mat.vocab,
+        daysUsed: 1,
+        lastUsedDate: todayStr(),
+        level: DATA.currentMaterial ? DATA.currentMaterial.level : 4
+      };
+      saveData();
+      startShadowWizard();
+    })
+    .catch(err=>{
+      console.warn(err);
+      document.getElementById('shadowBody').innerHTML =
+        '<div class="card"><p>AI 沒回好，再試一次。</p>' +
+        '<button class="btn btn-main btn-block" style="margin-top:10px" onclick="newMaterial(\'' + scenario + '\')">重試</button></div>';
+    });
+}
+
+function continueMaterial(){
+  const m = DATA.currentMaterial;
+  if(!m){ goScenario(); return; }
+  // 換日回訪 → 練習天數 +1
+  if(m.lastUsedDate !== todayStr()){
+    m.daysUsed += 1;
+    m.lastUsedDate = todayStr();
+    saveData();
+  }
+  showView('shadow');
+  startShadowWizard();
+}
+
+/* =========================================================
+   語音模組：TTS（機器朗讀）＋ STT（語音轉文字）
+   ========================================================= */
+const TTS_OK = 'speechSynthesis' in window;
+let VOICE = null;
+function initVoices(){
+  if(!TTS_OK) return;
+  const pick = ()=>{
+    const vs = speechSynthesis.getVoices().filter(v=>v.lang && v.lang.indexOf('en')===0);
+    // 依聲音品質排優先序：自然語音 > Google > 一般 en-US > 其他英文
+    VOICE =
+      vs.find(v=>/natural/i.test(v.name) && v.lang==='en-US') ||
+      vs.find(v=>/Google US English/i.test(v.name)) ||
+      vs.find(v=>/Google/i.test(v.name)) ||
+      vs.find(v=>/natural/i.test(v.name)) ||
+      vs.find(v=>v.lang==='en-US') ||
+      vs[0] || null;
+  };
+  pick();
+  speechSynthesis.onvoiceschanged = pick; // 有些瀏覽器語音清單是慢慢載入的
+}
+initVoices();
+
+function speak(text, rate){
+  if(!TTS_OK){ toast('這個瀏覽器不支援朗讀，建議用 Chrome'); return; }
+  speechSynthesis.cancel();
+  // 一句一句排隊唸：避免 Chrome 唸長段落到一半卡頓的老毛病
+  const chunks = text.match(/[^.!?]+[.!?]+["']?\s*|[^.!?]+$/g) || [text];
+  chunks.forEach(c=>{
+    const u = new SpeechSynthesisUtterance(c.trim());
+    u.lang = 'en-US';
+    if(VOICE) u.voice = VOICE;
+    u.rate = rate || 1;
+    speechSynthesis.speak(u); // 不 cancel，會自動接著上一句唸
+  });
+}
+function stopSpeak(){ if(TTS_OK) speechSynthesis.cancel(); }
+function speakMat(rate){ if(DATA.currentMaterial) speak(DATA.currentMaterial.text, rate); }
+function speakVocab(i){
+  const v = DATA.currentMaterial && DATA.currentMaterial.vocab[i];
+  if(v) speak(v.word + '. ' + v.example, 0.95);
+}
+function speakFb(key){ if(SH.feedback && SH.feedback[key]) speak(SH.feedback[key], 1); }
+
+/* STT：Chrome 可用；不支援的瀏覽器自動隱藏麥克風、只留打字 */
+const SR_CLS = window.SpeechRecognition || window.webkitSpeechRecognition;
+const STT_OK = !!SR_CLS;
+let RECOG = null;
+
+function toggleRec(){
+  const btn = document.getElementById('micBtn');
+  if(RECOG){ RECOG.stop(); return; }
+  try{ RECOG = new SR_CLS(); }
+  catch(e){ toast('這個瀏覽器不支援語音輸入，用打字也一樣'); return; }
+  RECOG.lang = 'en-US';
+  RECOG.continuous = true;
+  RECOG.interimResults = false;
+  RECOG.onresult = ev=>{
+    let add = '';
+    for(let i=ev.resultIndex; i<ev.results.length; i++){
+      if(ev.results[i].isFinal) add += ev.results[i][0].transcript + ' ';
+    }
+    const ta = document.getElementById('retellText');
+    if(ta && add) ta.value = (ta.value + ' ' + add).replace(/\s+/g,' ').trim() + ' ';
+  };
+  RECOG.onerror = ev=>{
+    if(ev.error === 'not-allowed') toast('麥克風權限被拒絕了，改用打字也可以');
+    else if(ev.error !== 'aborted') toast('語音辨識中斷，可再按一次或改打字');
+  };
+  RECOG.onend = ()=>{
+    RECOG = null;
+    const b = document.getElementById('micBtn');
+    if(b){ b.classList.remove('rec'); b.textContent = '🎙️ 按一下開始說（再按停止）'; }
+  };
+  RECOG.start();
+  if(btn){ btn.classList.add('rec'); btn.textContent = '🔴 錄音中…講完再按一下停止'; }
+}
+function stopRec(){ if(RECOG) RECOG.stop(); }
+
+/* =========================================================
+   跟讀六步驟精靈（Shadowing 主流程）
+   ========================================================= */
+const SH_STEPS = ['盲聽','理解','看稿跟讀','無稿盲跟','復述挑戰','批改內化'];
+let SH = { step: 1, feedback: null, retell: '' };
+
+function startShadowWizard(){
+  SH = { step: 1, feedback: null, retell: '' };
+  renderShadowStep();
+}
+
+function shGo(n){
+  stopSpeak(); stopRec();
+  const ta = document.getElementById('retellText');
+  if(ta) SH.retell = ta.value; // 離開復述頁時先把打到一半的存起來
+  SH.step = n;
+  renderShadowStep();
+  window.scrollTo(0, 0);
+}
+
+function renderShadowStep(){
+  const m = DATA.currentMaterial;
+  if(!m){ goScenario(); return; }
+
+  let dots = '';
+  for(let i=1;i<=6;i++) dots += '<div class="dot ' + (i<SH.step ? 'done' : i===SH.step ? 'on' : '') + '"></div>';
+  document.getElementById('dots').innerHTML = dots;
+  document.getElementById('stepName').textContent = '第 ' + SH.step + ' 步／6：' + SH_STEPS[SH.step-1];
+
+  const body = document.getElementById('shadowBody');
+  const playBtns = TTS_OK ? `
+    <div class="row" style="margin-top:12px">
+      <button class="btn btn-main" onclick="speakMat(1)">▶️ 原速</button>
+      <button class="btn btn-ghost" onclick="speakMat(0.8)">🐢 慢速 0.8x</button>
+      <button class="btn btn-plain" onclick="stopSpeak()">⏹ 停</button>
+    </div>` : `<p class="muted" style="margin-top:10px">⚠️ 這個瀏覽器不支援朗讀，建議改用 Chrome。</p>`;
+
+  if(SH.step === 1){
+    body.innerHTML = `
+      <div class="card">
+        <h3>👂 先不看文字，用耳朵聽</h3>
+        <p class="muted">聽 2–3 次，感受速度、斷句和語調。聽不懂沒關係，下一步就會看到稿。</p>
+        ${playBtns}
+      </div>
+      <button class="btn btn-coral btn-block" onclick="shGo(2)">聽好了，看逐字稿 →</button>`;
+
+  }else if(SH.step === 2){
+    const vocabHtml = m.vocab.map((v,i)=>`
+      <div class="vocab-item">
+        <div><b class="en">${v.word}</b><div class="m">${v.meaning}</div><div class="m en">${v.example}</div></div>
+        ${TTS_OK ? `<button class="speak-mini" onclick="speakVocab(${i})">🔊</button>` : ''}
+      </div>`).join('');
+    body.innerHTML = `
+      <div class="card">
+        <span class="tag">${m.scenario}</span><span class="muted" style="margin-left:8px">第 ${m.daysUsed} 天</span>
+        <h3 class="en" style="margin:8px 0">${m.title}</h3>
+        <div class="passage en">${m.text}</div>
+        <div class="trans">${m.translation}</div>
+      </div>
+      <div class="card"><h3>生字（${m.vocab.length}）— 練完會自動進單字庫</h3>${vocabHtml}</div>
+      <p class="muted" style="margin-bottom:10px">📖 目標是 100% 看懂。確定每一句都懂了再往下。</p>
+      <div class="row">
+        <button class="btn btn-plain" onclick="shGo(1)">‹ 回盲聽</button>
+        <button class="btn btn-coral" onclick="shGo(3)">全部看懂了 →</button>
+      </div>`;
+
+  }else if(SH.step === 3){
+    body.innerHTML = `
+      <div class="card">
+        <h3>🗣️ 看著稿，跟音檔「同步」唸出聲</h3>
+        <p class="muted">播放後跟著一起唸，模仿它的速度、斷句、語調。至少 2 次；卡住的句子用慢速再來。</p>
+        <div class="passage en" style="margin-top:10px">${m.text}</div>
+        ${playBtns}
+      </div>
+      <div class="row">
+        <button class="btn btn-plain" onclick="shGo(2)">‹ 上一步</button>
+        <button class="btn btn-coral" onclick="shGo(4)">跟得上了 →</button>
+      </div>`;
+
+  }else if(SH.step === 4){
+    body.innerHTML = `
+      <div class="card">
+        <h3>🙈 藏稿盲跟：晚半秒像影子一樣跟</h3>
+        <p class="muted">Shadowing 的精髓：不看稿，聲音出來後延遲 0.5–1 秒跟著唸。跟丟了就偷看一下再遮回去。</p>
+        <div class="passage en blur" id="blindP" style="margin-top:10px">${m.text}</div>
+        <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="document.getElementById('blindP').classList.toggle('blur')">👀 偷看一下／遮回去</button>
+        ${playBtns}
+      </div>
+      <div class="row">
+        <button class="btn btn-plain" onclick="shGo(3)">‹ 上一步</button>
+        <button class="btn btn-coral" onclick="shGo(5)">可以脫稿了 →</button>
+      </div>`;
+
+  }else if(SH.step === 5){
+    body.innerHTML = `
+      <div class="card">
+        <h3>🎤 復述挑戰：用「自己的話」講大意</h3>
+        <p class="muted">不用背原文！想像你要把這段講給同事聽，2–4 句講出重點就好。講完送 AI 批改。</p>
+        ${STT_OK ? `<button class="mic" id="micBtn" style="margin-top:12px" onclick="toggleRec()">🎙️ 按一下開始說（再按停止）</button>`
+                 : `<p class="muted" style="margin:10px 0">（這個瀏覽器不支援麥克風輸入，直接用打的一樣算數）</p>`}
+        <textarea id="retellText" class="en" placeholder="你的英文會出現在這裡，也可以直接打字或修改…"></textarea>
+      </div>
+      <div class="row">
+        <button class="btn btn-plain" onclick="shGo(4)">‹ 上一步</button>
+        <button class="btn btn-coral" onclick="submitRetell()">送 AI 批改 →</button>
+      </div>`;
+    if(SH.retell) document.getElementById('retellText').value = SH.retell;
+
+  }else{ // step 6：批改結果與內化
+    const fb = SH.feedback;
+    const errHtml = fb.errors.length
+      ? fb.errors.map(e=>`
+        <div class="err"><span style="text-decoration:line-through">${e.original}</span> → <span class="fix">${e.corrected}</span> <span class="tag">${e.type}</span>
+        <div class="why">${e.explain}</div></div>`).join('')
+      : '<p class="muted">沒抓到明顯錯誤，講得很乾淨！</p>';
+    body.innerHTML = `
+      <div class="card">
+        <div class="score-row">
+          <div class="score-box"><div class="n">${fb.fluency}<span style="font-size:13px">/5</span></div><div class="l">流暢度</div></div>
+          <div class="score-box"><div class="n">${fb.accuracy}<span style="font-size:13px">/5</span></div><div class="l">用字文法</div></div>
+          <div class="score-box"><div class="n" style="color:var(--teal)">${(fb.fluency+fb.accuracy)*10}</div><div class="l">本回得分</div></div>
+        </div>
+        <h3>🔍 逐條修正</h3>${errHtml}
+        <h3 style="margin-top:12px">✨ 你的修正版${TTS_OK ? '（點一下會唸給你跟讀）' : ''}</h3>
+        <div class="better en" ${TTS_OK ? `style="cursor:pointer" onclick="speakFb('improved')"` : ''}>${fb.improved}</div>
+        <h3>🏆 更道地的講法${TTS_OK ? '（點一下朗讀）' : ''}</h3>
+        <div class="better en" ${TTS_OK ? `style="cursor:pointer" onclick="speakFb('native_example')"` : ''}>${fb.native_example}</div>
+        <p class="muted" style="margin-top:8px">💬 ${fb.encouragement}</p>
+        ${FAKE_MODE ? '<p class="muted" style="margin-top:8px">🤖 目前是「假 AI」示範批改（只會抓幾種台灣常見錯誤）。接上真 AI 後會逐句針對你的內容批改。</p>' : ''}
+      </div>
+      <button class="btn btn-main btn-block" onclick="completeSession()">✅ 完成這一回，打卡！</button>`;
+  }
+}
+
+function submitRetell(){
+  stopRec(); stopSpeak();
+  const ta = document.getElementById('retellText');
+  const txt = (ta ? ta.value : '').trim();
+  if(!txt){ toast('先用說的或打的，講一小段再送批改'); return; }
+  SH.retell = txt;
+  document.getElementById('shadowBody').innerHTML =
+    '<div class="loading"><div class="spin"></div>AI 批改中…</div>';
+  gradeResponse(DATA.currentMaterial, txt)
+    .then(fb=>{ SH.feedback = fb; SH.step = 6; renderShadowStep(); })
+    .catch(err=>{
+      console.warn(err);
+      document.getElementById('shadowBody').innerHTML =
+        '<div class="card"><p>AI 沒回好，再試一次。</p>' +
+        '<button class="btn btn-main btn-block" style="margin-top:10px" onclick="SH.step=5;renderShadowStep()">重試</button></div>';
+    });
+}
+
+/* =========================================================
+   批改引擎（假 AI：對照台灣常錯清單做規則檢查）
+   之後接真 Claude API 也是改這裡，畫面不用動。
+   ========================================================= */
+const ERROR_RULES = [
+  { re:/\bvery like\b/i, fix:'really like', type:'用字', explain:'中文「很喜歡」直翻成 very like 是台灣最常見錯誤之一，要說 really like 或 I love it。' },
+  { re:/\bthere (have|has)\b/i, fix:'there is / there are', type:'句型', explain:'表達「有…」的存在句要用 There is / There are，不是 There have。' },
+  { re:/\bhow to say\b/i, fix:'how do you say', type:'句型', explain:'問「怎麼說」要用完整問句：How do you say...?' },
+  { re:/\bwait me\b/i, fix:'wait for me', type:'搭配詞', explain:'wait 後面要先接 for 再接人：wait for me。' },
+  { re:/\bdo a decision\b/i, fix:'make a decision', type:'搭配詞', explain:'決定是「做出來的」：make a decision，不用 do。' },
+  { re:/\beat medicine\b/i, fix:'take medicine', type:'搭配詞', explain:'吃藥的動詞是 take：take medicine。' },
+  { re:/\b(open|close) the light\b/i, fix:'turn on / turn off the light', type:'搭配詞', explain:'開關電器要用 turn on / turn off；open/close 是開門開窗那種開。' },
+  { re:/\binformations\b/i, fix:'information', type:'單複數', explain:'information 不可數，永遠不加 s。' },
+  { re:/\badvices\b/i, fix:'advice', type:'單複數', explain:'advice 不可數，要說 some advice 或 a piece of advice。' }
+];
+
+function gradeResponse(material, userText){
+  return gradeText(userText, material.sampleRetell || material.text);
+}
+function gradeText(userText, nativeExample){
+  return new Promise((resolve, reject)=>{
+    if(!FAKE_MODE){ reject(new Error('尚未接上 AI')); return; }
+    setTimeout(()=>{
+      const errors = [];
+      let improved = userText;
+      ERROR_RULES.forEach(r=>{
+        const mch = userText.match(r.re);
+        if(mch){
+          errors.push({ original: mch[0], corrected: r.fix, type: r.type, explain: r.explain });
+          improved = improved.replace(new RegExp(r.re.source, 'gi'), r.fix);
+        }
+      });
+      const wc = userText.split(/\s+/).filter(Boolean).length;
+      const fluency = wc>=45 ? 5 : wc>=30 ? 4 : wc>=15 ? 3 : 2;
+      const accuracy = Math.max(2, 5 - errors.length - (wc<10 ? 1 : 0));
+      const cheers = [
+        '敢開口就贏一半了，這一回的節奏比想像中穩。',
+        '重點都有講到，接下來把句子拉長，就更接近金證了。',
+        '今天的你比昨天多講了一回——就是在超車的路上。'
+      ];
+      resolve({
+        fluency, accuracy, errors, improved,
+        native_example: nativeExample,
+        encouragement: cheers[Math.floor(Math.random()*cheers.length)] + (wc<15 ? '（下次試著多講一兩句，流暢度的分數會上來）' : ''),
+        suggested_vocab: []
+      });
+    }, 1100);
+  });
+}
+
+/* =========================================================
+   完成一回：計分、打卡（同日不重複加）、生字入庫
+   ========================================================= */
+function yesterdayStr(){
+  const d = new Date(Date.now() - 86400000);
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+}
+
+function completeSession(){
+  const fb = SH.feedback;
+  const t = todayStr();
+  recordSession('shadow', (fb.fluency+fb.accuracy)*10);
+
+  // 素材生字自動入單字庫（去重），開始跑 SRS
+  (DATA.currentMaterial.vocab || []).forEach(v=>{
+    if(!DATA.vocab.some(x=>x.word.toLowerCase() === v.word.toLowerCase())){
+      DATA.vocab.push({ word:v.word, meaning:v.meaning, example:v.example,
+        due:new Date().toISOString(), intervalDays:0, addedDate:t });
+    }
+  });
+
+  saveData();
+  toast('🎉 打卡成功！🔥 連續 ' + DATA.streak.count + ' 天');
+  goHome();
+}
+
+/* =========================================================
+   打卡共用邏輯：記一回成績＋連續天數（同日不重複加）
+   ========================================================= */
+function recordSession(mode, score, extra){
+  const t = todayStr();
+  const firstToday = !DATA.sessions.some(s=>s.date===t);
+  DATA.sessions.push(Object.assign({ date:t, mode, score }, extra || {}));
+  if(firstToday && DATA.streak.lastDate !== t){
+    DATA.streak.count = (DATA.streak.lastDate === yesterdayStr()) ? DATA.streak.count + 1 : 1;
+    DATA.streak.lastDate = t;
+  }
+}
+
+/* =========================================================
+   閱讀特訓：長文＋計時（WPM）＋選擇題＋點字收單字本
+   ========================================================= */
+const READING_BANK = [
+  {
+    id: 'r1', tag: '職場公告（Part 7 單篇）',
+    title: 'Revised Remote Work Policy',
+    text: `To: All Staff — From: Rachel Lin, Director of Human Resources — Subject: Revised Remote Work Policy — Date: March 3
+
+Starting April 1, the company will implement a revised remote work policy designed to balance flexibility with team collaboration. Under the new arrangement, all full-time employees who have completed their three-month probation period are eligible to work from home up to three days per week.
+
+Please note that attendance on Tuesdays and Thursdays remains mandatory for all departments, as these days are reserved for cross-team meetings and client visits. Employees whose duties require access to laboratory equipment are exempt from this policy and should consult their supervisors about alternative arrangements. Desks for on-site days must be reserved through the internal portal at least 48 hours in advance.
+
+Going forward, performance will be evaluated based on deliverables rather than hours logged. Managers have been asked to set clear weekly targets and to hold brief check-in calls with remote staff. In addition, the company will reimburse up to NT$3,000 per year for home-office equipment, provided that original receipts are submitted to the Finance Department.
+
+Finally, please be reminded that all remote work must comply with our data-security guidelines. Failure to do so may result in the suspension of remote privileges. A town hall meeting will be held on March 20 to answer questions about the transition; you are encouraged to submit questions in advance through the HR portal.`,
+    glossary: [
+      { word:'implement', meaning:'實施、執行', example:'The new rules will be implemented next month.' },
+      { word:'revised', meaning:'修訂過的', example:'Please read the revised schedule carefully.' },
+      { word:'probation', meaning:'試用期', example:'New hires are on probation for three months.' },
+      { word:'eligible', meaning:'有資格的', example:'Only members are eligible for the discount.' },
+      { word:'mandatory', meaning:'強制的、必須的', example:'Attendance at the training is mandatory.' },
+      { word:'exempt', meaning:'被豁免的、不受規範的', example:'Interns are exempt from this requirement.' },
+      { word:'deliverables', meaning:'交付成果、要交出來的工作成品', example:'The contract lists all project deliverables.' },
+      { word:'reimburse', meaning:'核銷、補助（費用）', example:'The company will reimburse your travel expenses.' },
+      { word:'comply', meaning:'遵守（comply with）', example:'All staff must comply with safety rules.' },
+      { word:'suspension', meaning:'暫停、中止', example:'Breaking the rules led to a suspension of his account.' },
+      { word:'transition', meaning:'轉換（期）、過渡', example:'The transition to the new system took a month.' }
+    ],
+    questions: [
+      { q:'What is the main purpose of this memo?',
+        options:['To announce the opening of a new office','To explain an updated policy on working from home','To introduce a new Human Resources director','To report the results of a client visit'],
+        answer:1, explain:'全文都在說明 4/1 上路的遠距工作新制：資格、規定、補助、注意事項——標準「主旨題」，答案通常在第一段。' },
+      { q:'Who is NOT covered by the new remote work arrangement?',
+        options:['Employees who have passed probation','Managers who hold weekly check-in calls','Staff whose duties require laboratory equipment','Employees in the Finance Department'],
+        answer:2, explain:'第二段：需要用實驗室設備的員工是 exempt（豁免、不適用），要另外跟主管安排。' },
+      { q:'What must employees do to receive money for home-office equipment?',
+        options:['Submit original receipts to the Finance Department','Reserve a desk 48 hours in advance','Attend the town hall meeting on March 20','Work at least three days on-site each week'],
+        answer:0, explain:'第三段最後：provided that original receipts are submitted —「前提是要交正本收據」。provided that = 只要、前提是，金證必考。' },
+      { q:'The word "deliverables" in paragraph 3 is closest in meaning to:',
+        options:['delivery fees','completed work','shipping schedules','equipment orders'],
+        answer:1, explain:'deliverables 是「要交出來的成果」，跟送貨（delivery）無關——這是經典陷阱字。' },
+      { q:'What could cause an employee to lose remote work privileges?',
+        options:['Missing a weekly target','Failing to reserve a desk','Violating data-security guidelines','Working from home more than three days'],
+        answer:2, explain:'第四段：不遵守資安規範 may result in the suspension of remote privileges。' }
+    ]
+  },
+  {
+    id: 'r2', tag: '雜誌文章（Part 7 單篇）',
+    title: 'The End of Free Returns?',
+    text: `For years, online shoppers have treated free returns as a basic right. Order three sizes, keep one, and send the rest back — a habit the industry calls "bracketing." According to a recent survey, nearly two-thirds of consumers admit to purchasing multiple versions of an item with the intention of returning most of them.
+
+Retailers, however, are quietly rewriting the rules. Processing a single returned package — shipping, inspection, repackaging, and restocking — can cost a merchant between one-fifth and one-third of the item's original price. When margins are thin, a generous return policy can turn a profitable sale into a loss. As a result, a growing number of companies now charge a small fee for mail-in returns, while still allowing free returns at physical stores, a strategy designed to cut shipping costs and bring customers back through the door.
+
+The environmental toll is harder to see but just as troubling. Returned goods travel hundreds of kilometers in trucks, and many never make it back to the shelf. Items that are damaged, unsealed, or simply out of season are often written off and sent to landfills. One logistics firm estimates that returns in the United States alone generate several billion kilograms of waste each year.
+
+Some brands have chosen a surprising solution: telling customers to keep unwanted items while still issuing a refund. For inexpensive products, the cost of return shipping and handling exceeds the value of the item itself, so a keep-it policy actually saves money and earns goodwill.
+
+Analysts caution that stricter policies involve a trade-off. Return fees may deter casual shoppers and damage the loyalty that took years to build. The winners, they suggest, will be retailers that use better sizing guides and clearer product photos to prevent returns before they happen — because the cheapest return is the one that never occurs.`,
+    glossary: [
+      { word:'bracketing', meaning:'（購物）一次買多個尺寸/款式，打算退掉大部分', example:'Bracketing has become common among online clothing shoppers.' },
+      { word:'merchant', meaning:'商家、賣家', example:'Small merchants struggle with high return costs.' },
+      { word:'margin', meaning:'利潤空間', example:'Profit margins in retail are often very thin.' },
+      { word:'restocking', meaning:'重新上架、補貨', example:'The store charges a restocking fee for opened items.' },
+      { word:'toll', meaning:'代價、損害', example:'The long hours took a toll on her health.' },
+      { word:'written off', meaning:'認列損失、報廢（write off）', example:'Damaged goods are usually written off.' },
+      { word:'landfill', meaning:'垃圾掩埋場', example:'Tons of returned clothing end up in landfills.' },
+      { word:'exceed', meaning:'超過', example:'The cost must not exceed the budget.' },
+      { word:'goodwill', meaning:'好感、商譽', example:'The refund earned the company a lot of goodwill.' },
+      { word:'trade-off', meaning:'取捨、有一好沒兩好', example:'There is a trade-off between price and quality.' },
+      { word:'deter', meaning:'使卻步、嚇阻', example:'High fees may deter new customers.' },
+      { word:'loyalty', meaning:'忠誠度', example:'Customer loyalty takes years to build.' }
+    ],
+    questions: [
+      { q:'What is the article mainly about?',
+        options:['Why online prices keep rising','How and why retailers are changing return policies','How to choose the right clothing size','The comeback of physical stores'],
+        answer:1, explain:'全文從退貨成本、環境代價講到商家的新做法——主軸是「退貨政策為什麼在改變」。' },
+      { q:'The word "bracketing" refers to:',
+        options:['Buying several versions of an item and planning to return some','Comparing prices across different websites','Returning items after the deadline','Ordering products for family members'],
+        answer:0, explain:'第一段直接定義：訂三個尺寸、留一個、退掉其他，業界稱為 bracketing。' },
+      { q:'Why do some companies let customers keep refunded items?',
+        options:['To reduce packaging waste','Because shipping and handling would cost more than the item is worth','Because their warehouses are already full','To comply with new consumer regulations'],
+        answer:1, explain:'第四段：便宜商品的退貨運費＋處理成本 exceeds the value of the item，所以「不用寄回來」反而省錢。' },
+      { q:'According to the article, why do many returned items end up in landfills?',
+        options:['Customers damage them on purpose','They are damaged, unsealed, or out of season','Trucks cannot deliver them in time','Stores refuse to accept any returns'],
+        answer:1, explain:'第三段：damaged、unsealed、out of season 的商品常被 written off 直接報廢。' },
+      { q:'What does the article suggest is the smartest long-term strategy?',
+        options:['Charging higher return fees','Closing online stores','Preventing returns with better product information','Limiting how much each customer can buy'],
+        answer:2, explain:'最後一句點題：用更好的尺寸表和商品照片「讓退貨根本不發生」才是贏家——the cheapest return is the one that never occurs。' }
+    ]
+  },
+  {
+    id: 'r3', tag: '雙篇 Email（Part 7 多篇）',
+    title: 'Invoice #7741 — An E-mail Exchange',
+    text: `[E-mail 1] From: Vivian Chou, Event Coordinator, Brightwave Software — To: Reservations, Harborview Hotel — Subject: Concerns about Invoice #7741 — Date: September 24
+
+Dear Sir or Madam,
+
+I am writing regarding the invoice we received yesterday for our annual client conference, scheduled for October 16 at your hotel. Two items concern me. First, the invoice lists the Grand Ballroom rental at the weekend rate, although our event falls on a Thursday. Second, we were charged for a projector and sound system, even though your sales manager confirmed in writing that audiovisual equipment would be provided at no extra charge for bookings of more than eighty guests; we expect roughly one hundred and twenty attendees.
+
+Could you please issue a corrected invoice by the end of this month? Our accounting department cannot release payment until the figures match the original quotation.
+
+[E-mail 2] From: Daniel Reyes, Guest Services Manager, Harborview Hotel — Subject: RE: Concerns about Invoice #7741 — Date: September 26
+
+Dear Ms. Chou,
+
+Thank you for bringing this to our attention, and please accept my sincere apologies for the oversight. You are correct on both counts. A revised invoice reflecting the weekday rate and the complimentary audiovisual package is attached to this message.
+
+As a gesture of goodwill, we would also like to offer your guests a complimentary welcome drink upon arrival. In return, we kindly ask that you confirm your final headcount no later than October 2, as our catering team must place orders with suppliers a full two weeks before your event. We look forward to hosting Brightwave Software next month.`,
+    glossary: [
+      { word:'invoice', meaning:'請款單、發票', example:'Please pay the invoice within 30 days.' },
+      { word:'quotation', meaning:'報價單', example:'The final price should match the quotation.' },
+      { word:'audiovisual', meaning:'影音（設備）的', example:'The room comes with audiovisual equipment.' },
+      { word:'attendees', meaning:'與會者、出席者', example:'Over 200 attendees joined the seminar.' },
+      { word:'oversight', meaning:'疏失、疏忽', example:'The billing error was an oversight, not a policy.' },
+      { word:'complimentary', meaning:'免費贈送的', example:'Breakfast is complimentary for all guests.' },
+      { word:'goodwill', meaning:'善意、好感', example:'They offered a discount as a gesture of goodwill.' },
+      { word:'headcount', meaning:'（出席）人數', example:'Please confirm the final headcount by Friday.' },
+      { word:'catering', meaning:'餐飲承辦', example:'The catering team prepared food for 100 people.' },
+      { word:'release', meaning:'放行、核發（款項）', example:'Payment will be released after approval.' }
+    ],
+    questions: [
+      { q:'Why did Ms. Chou write to the hotel?',
+        options:['To cancel a conference booking','To point out two errors on an invoice','To increase the number of guests','To ask about transportation options'],
+        answer:1, explain:'第一封信開頭：Two items concern me——場地費算成週末價、影音設備不該收費，就是兩個帳單錯誤。' },
+      { q:'What had the hotel sales manager promised in writing?',
+        options:['A discount on the ballroom rental','Free audiovisual equipment for bookings over eighty guests','A complimentary welcome drink','Weekend rates on weekday events'],
+        answer:1, explain:'第一封信：confirmed in writing that audiovisual equipment would be provided at no extra charge for bookings of more than eighty guests。' },
+      { q:'What is suggested about the conference?',
+        options:['It takes place on a weekend','About 120 people are expected to attend','It is Brightwave’s first client event','It has been postponed to November'],
+        answer:1, explain:'第一封信：we expect roughly one hundred and twenty attendees（約 120 人）。活動在 10/16 星期四，不是週末。' },
+      { q:'What does Mr. Reyes ask Ms. Chou to do?',
+        options:['Pay the original invoice immediately','Contact the catering team directly','Confirm the final number of guests by October 2','Sign a new contract for next year'],
+        answer:2, explain:'第二封信：we kindly ask that you confirm your final headcount no later than October 2。no later than = 最晚、不得晚於，金證必考。' },
+      { q:'Why must the headcount be confirmed by October 2?',
+        options:['The ballroom reservation will expire','Catering orders must go to suppliers two weeks before the event','The hotel closes for renovation in October','Invoices are only issued at month-end'],
+        answer:1, explain:'跨句推理：活動是 10/16，餐飲團隊要「提前整整兩週」向供應商下單 → 10/16 往前推 14 天= 10/2。這種「兩篇資訊相加」是多篇題的核心。' }
+    ]
+  }
+];
+
+let READ = null;
+
+function startReading(){
+  const art = READING_BANK[Math.floor(Math.random() * READING_BANK.length)];
+  READ = { art, t0:0, secs:0, iv:null, answers:[], wpm:0, score:0, savedCount:0 };
+  showView('read');
+  const wc = art.text.split(/\s+/).filter(Boolean).length;
+  document.getElementById('readBody').innerHTML = `
+    <div class="card">
+      <span class="tag">${art.tag}</span>
+      <h2 class="en" style="margin:8px 0">${art.title}</h2>
+      <p class="muted">全文約 ${wc} 字 · ${art.questions.length} 題選擇題 · 會計時算你的閱讀速度（WPM）</p>
+      <p class="muted" style="margin-top:6px">📥 讀的時候<b>點任何不會的字</b>，就會自動收進單字本。</p>
+      <p class="muted" style="margin-top:6px">🎯 目標：先求看懂、再求變快。準確率穩了，速度自然會上來。</p>
+      <button class="btn btn-coral btn-block" style="margin-top:12px" onclick="readBegin()">開始閱讀 ⏱️</button>
+    </div>
+    <button class="btn btn-ghost btn-block" onclick="startReading()">🔀 換一篇</button>`;
+}
+
+function wrapWords(text){
+  return text.split(/\n\n+/).map(par=>{
+    const toks = par.split(/(\s+)/).map(tok=>{
+      const key = tok.replace(/^[^A-Za-z']+|[^A-Za-z']+$/g, '').toLowerCase();
+      if(!key || !/[a-z]/.test(key)) return tok;
+      const saved = DATA.vocab.some(v=>v.word.toLowerCase()===key);
+      return `<span class="w${saved?' saved':''}" data-w="${key}" onclick="clickWord(this)">${tok}</span>`;
+    }).join('');
+    return '<p>' + toks + '</p>';
+  }).join('');
+}
+
+function clickWord(el){
+  const key = el.dataset.w;
+  if(DATA.vocab.some(v=>v.word.toLowerCase()===key)){ toast('「' + key + '」已經在單字本裡了'); return; }
+  const g = (READ && READ.art.glossary || []).find(x=>x.word.toLowerCase()===key);
+  const meaning = g ? g.meaning : '';
+  DATA.vocab.push({ word:key, meaning, example: g ? g.example : '',
+    due:new Date().toISOString(), intervalDays:0, addedDate:todayStr() });
+  saveData();
+  el.classList.add('saved');
+  if(READ) READ.savedCount++;
+  toast(g ? ('📥 已收：' + key + '＝' + meaning) : ('📥 已收進單字本：' + key + '（可到單字本按 ✏️ 補意思）'));
+}
+
+function readBegin(){
+  const art = READ.art;
+  READ.t0 = Date.now();
+  document.getElementById('readBody').innerHTML = `
+    <div style="text-align:center;margin-bottom:10px"><span class="timer-pill" id="readTimer">0:00</span></div>
+    <div class="card">
+      <h3 class="en" style="margin-bottom:8px">${art.title}</h3>
+      <div class="passage en" style="font-size:16px">${wrapWords(art.text)}</div>
+    </div>
+    <button class="btn btn-coral btn-block" onclick="readToQuiz()">讀完了，做題目 →</button>`;
+  window.scrollTo(0, 0);
+  READ.iv = setInterval(()=>{
+    const s = Math.floor((Date.now() - READ.t0) / 1000);
+    const el = document.getElementById('readTimer');
+    if(el) el.textContent = Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+  }, 1000);
+}
+
+function fmtSecs(s){ return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
+
+function readToQuiz(){
+  clearInterval(READ.iv);
+  READ.secs = Math.max(1, Math.round((Date.now() - READ.t0) / 1000));
+  const art = READ.art;
+  const wc = art.text.split(/\s+/).filter(Boolean).length;
+  READ.wpm = Math.round(wc / READ.secs * 60);
+  READ.answers = new Array(art.questions.length).fill(-1);
+  const qHtml = art.questions.map((q,qi)=>`
+    <div class="card">
+      <h3 style="line-height:1.6">Q${qi+1}. <span class="en" style="font-weight:400">${q.q}</span></h3>
+      ${q.options.map((o,oi)=>`<button class="opt en" id="opt-${qi}-${oi}" onclick="pickOpt(${qi},${oi})">${'ABCD'[oi]}. ${o}</button>`).join('')}
+    </div>`).join('');
+  document.getElementById('readBody').innerHTML = `
+    <div class="card today">
+      <div><div class="num">${fmtSecs(READ.secs)}</div><div class="lbl">閱讀時間</div></div>
+      <div><div class="num">${READ.wpm}</div><div class="lbl">WPM（字/分）</div></div>
+      <div><div class="num">${READ.savedCount}</div><div class="lbl">收進單字本</div></div>
+    </div>
+    ${qHtml}
+    <button class="btn btn-coral btn-block" onclick="gradeQuiz()">交卷 →</button>`;
+  window.scrollTo(0, 0);
+}
+
+function pickOpt(qi, oi){
+  READ.answers[qi] = oi;
+  READ.art.questions[qi].options.forEach((_, i)=>{
+    const el = document.getElementById('opt-' + qi + '-' + i);
+    if(el) el.classList.toggle('sel', i === oi);
+  });
+}
+
+function gradeQuiz(){
+  const missing = READ.answers.indexOf(-1);
+  if(missing !== -1){ toast('第 ' + (missing+1) + ' 題還沒作答'); return; }
+  const qs = READ.art.questions;
+  let correct = 0;
+  const qHtml = qs.map((q,qi)=>{
+    const my = READ.answers[qi];
+    const ok = my === q.answer;
+    if(ok) correct++;
+    return `<div class="card">
+      <h3 style="line-height:1.6">${ok?'✅':'❌'} Q${qi+1}. <span class="en" style="font-weight:400">${q.q}</span></h3>
+      ${q.options.map((o,oi)=>{
+        let cls = 'opt en';
+        if(oi === q.answer) cls += ' right';
+        else if(oi === my) cls += ' wrong';
+        return `<div class="${cls}">${'ABCD'[oi]}. ${o}</div>`;
+      }).join('')}
+      <div style="font-size:13px;color:var(--soft);margin-top:4px;line-height:1.7">💡 ${q.explain}</div>
+    </div>`;
+  }).join('');
+  READ.score = Math.round(correct / qs.length * 100);
+  document.getElementById('readBody').innerHTML = `
+    <div class="card today">
+      <div><div class="num" style="color:${READ.score>=80?'var(--ok)':'var(--indigo)'}">${READ.score}</div><div class="lbl">正確率</div></div>
+      <div><div class="num">${correct}/${qs.length}</div><div class="lbl">答對</div></div>
+      <div><div class="num">${READ.wpm}</div><div class="lbl">WPM</div></div>
+    </div>
+    ${qHtml}
+    <button class="btn btn-main btn-block" onclick="completeReading()">✅ 完成這一回，打卡！</button>`;
+  window.scrollTo(0, 0);
+}
+
+function completeReading(){
+  recordSession('reading', READ.score, { wpm: READ.wpm });
+  DATA.recentAccuracy.push(READ.score);
+  if(DATA.recentAccuracy.length > 5) DATA.recentAccuracy.shift();
+  saveData();
+  toast('🎉 打卡成功！🔥 連續 ' + DATA.streak.count + ' 天');
+  goHome();
+}
+
+function exitReading(){
+  if(confirm('確定要離開這篇閱讀嗎？這回的進度不會保存。')){
+    if(READ && READ.iv) clearInterval(READ.iv);
+    goHome();
+  }
+}
+
+/* ---------- 啟動 ---------- */
+goHome();
+</script>
+</body>
+</html>
