@@ -125,7 +125,7 @@ Polly 依老闆要求先用 NotebookLM 研究了主流學習法，以下是**必
 |---|---|---|
 | **Phase 1（現在）** | 網頁版：跟讀＋今日分享＋批改，資料存瀏覽器 | 單一 HTML 或小型專案資料夾 |
 | **Phase 2** | 單字 SRS＋進步頁＋打卡完整化 | 同上迭代 |
-| **Phase 3** | ✅ 已改走 **PWA 路線**（2026-07-06，與烘焙小天地實際做法相同，非 Xcode）：manifest.json＋sw.js＋icon-512/192/180.png 已就緒，index.html 已掛 manifest、apple-touch-icon 與 SW 註冊 | 上架方式＝把整個資料夾放上 HTTPS 空間 → iPhone Safari 開啟 →「加入主畫面」。圖示由 PowerShell System.Drawing 生成（金牌「金」字＋海浪）。推播提醒 PWA 仍受限，若未來要推播再評估 Capacitor |
+| **Phase 3** | ✅ 已改走 **PWA 路線**（2026-07-06，與烘焙小天地實際做法相同，非 Xcode）：manifest.json＋sw.js＋icon-512/192/180.png 已就緒，index.html 已掛 manifest、apple-touch-icon 與 SW 註冊 | **已上線：https://polly1228.github.io/toeic/**（GitHub 倉庫 Polly1228/toeic，Pages 從 main /(root) 部署）。更新流程＝改完本機檔案 → 到倉庫網頁重新上傳蓋掉同名檔 → **記得把 sw.js 的 CACHE 版本號 +1（gold-sprint-v1 → v2…）**，否則舊快取不會更新。上架方式＝把整個資料夾放上 HTTPS 空間 → iPhone Safari 開啟 →「加入主畫面」。圖示由 PowerShell System.Drawing 生成（金牌「金」字＋海浪）。推播提醒 PWA 仍受限，若未來要推播再評估 Capacitor |
 
 ### 5.2 AI 呼叫 —— ⚠️ 最重要的技術決策點，請先跟 Polly 討論
 此 App 核心功能（生素材、批改）都要呼叫 Claude API。**與烘焙小天地不同，本專案無法純離線。**在 Claude Code 建置的獨立網頁/iOS App 中呼叫 Anthropic API 需要 API key，選項：
