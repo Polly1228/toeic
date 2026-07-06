@@ -1,4 +1,4 @@
-const CACHE = 'gold-sprint-v2';
+const CACHE = 'gold-sprint-v3';
 const ASSETS = [
   './index.html',
   './manifest.json',
